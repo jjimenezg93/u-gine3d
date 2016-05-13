@@ -13,11 +13,11 @@ public:
 	void AddVertex(const Vertex& v);
 	void AddTriangle(uint32 v0, uint32 v1, uint32 v2);
 
-	Ptr<Texture> GetTexture() const;
-	void SetTexture(Ptr<Texture> tex);
+	Ptr<Texture> GetTexture() const { return mTexture; }
+	void SetTexture(Ptr<Texture> tex) { mTexture = tex; }
 
-	const Array<Vertex>& GetVertices() const;
-	Array<Vertex>& GetVertices();
+	const Array<Vertex>& GetVertices() const { return mVertices; }
+	Array<Vertex>& GetVertices() { return mVertices; }
 
 	void Rebuild();
 	void Render();
