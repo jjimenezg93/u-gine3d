@@ -32,21 +32,45 @@ Ptr<Mesh> Mesh::Create(const String & filename) {
 		Ptr<Submesh> submesh = Submesh::Create(ResourceManager::Instance()->LoadTexture(tex));
 		
 		//indices
+		uint32 iX, iY, iZ;
 		rapidjson::Value::ConstValueIterator indIt = (*itr)["indices"].Begin();
 		while (indIt != (*itr)["indices"].End()) {
-			//it's storing them in inverse order -> first mesh: 2, 0, 1, 3, 2, 1...
-			submesh->AddTriangle(indIt++->GetInt(), indIt++->GetInt(), indIt++->GetInt());
+			iX = static_cast<uint32>(indIt++->GetInt());
+			iY = static_cast<uint32>(indIt++->GetInt());
+			iZ = static_cast<uint32>(indIt++->GetInt());
+			submesh->AddTriangle(iX, iY, iZ);
+		}
+
+		//coords
+		Vertex v;
+		float cX, cY, cZ;
+		indIt = (*itr)["coords"].Begin();
+		while (indIt != (*itr)["coords"].End()) {
+			cX = static_cast<float>(indIt++->GetDouble());
+			cY = static_cast<float>(indIt++->GetDouble());
+			cZ = static_cast<float>(indIt++->GetDouble());
+			v.mPosition = glm::vec3(cX, cY, cZ);
+			submesh->AddVertex(v);
+		}
+
+		//texcoords
+		uint32 i = 0;
+		float tcU, tcV;
+		indIt = (*itr)["texcoords"].Begin();
+		while (indIt != (*itr)["texcoords"].End()) {
+			tcU = static_cast<float>(indIt++->GetDouble());
+			tcV = static_cast<float>(indIt++->GetDouble());
+			submesh->GetVertices()[i++].mTexCoords = glm::vec2(tcU, tcV);
 		}
 
 		mesh->AddSubmesh(submesh);
 	}
 
-
 	return mesh;
 }
 
 Mesh::Mesh(const String & filename) {
-
+	mFilename = filename;
 }
 
 void Mesh::Render() {
