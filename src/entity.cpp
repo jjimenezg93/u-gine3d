@@ -10,7 +10,11 @@ Entity::Entity() {
 }
 
 void Entity::Move(const glm::vec3 & speed) {
-
+	glm::vec3 axis;
+	axis.x = mRotation.x / sqrt(pow(mRotation.x, 2) + pow(mRotation.y, 2) + pow(mRotation.z, 2));
+	axis.y = mRotation.y / sqrt(pow(mRotation.x, 2) + pow(mRotation.y, 2) + pow(mRotation.z, 2));
+	axis.z = mRotation.z / sqrt(pow(mRotation.x, 2) + pow(mRotation.y, 2) + pow(mRotation.z, 2));
+	mPosition += axis * speed;
 }
 
 void Entity::Render() {
