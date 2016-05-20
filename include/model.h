@@ -5,7 +5,7 @@
 
 class Mesh;
 
-class Model : public Entity {
+class Model: public Entity {
 public:
 	static Ptr<Model> Create(Ptr<Mesh> mesh);
 
@@ -16,8 +16,8 @@ protected:
 	virtual ~Model() {}
 private:
 	Ptr<Mesh> mMesh;
-friend class Ptr<Model>;
-friend class Ptr<const Model>;
+	friend class Ptr<Model>;
+	friend class Ptr<const Model>;
 };
 
 #endif // UGINE_MODEL_H

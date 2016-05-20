@@ -18,19 +18,3 @@ Texture::Texture(const String& filename) {
 Texture::~Texture() {
 
 }
-
-const String& Texture::GetFilename() const {
-	return mFilename;
-}
-
-uint32 Texture::GetHandle() const {
-	return mHandle;
-}
-
-uint32 Texture::GetWidth() const {
-	return mWidth;
-}
-
-uint32 Texture::GetHeight() const {
-	return mHeight;
-}

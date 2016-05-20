@@ -30,8 +30,8 @@ private:
 	uint32 mIndexBuffer;
 	Array<Vertex> mVertices;
 	Array<uint16> mIndices;
-friend class Ptr<Submesh>;
-friend class Ptr<const Submesh>;
+	friend class Ptr<Submesh>;
+	friend class Ptr<const Submesh>;
 };
 
 #endif // UGINE_SUBMESH_H

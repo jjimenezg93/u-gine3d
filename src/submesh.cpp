@@ -1,11 +1,12 @@
 #include "../include/submesh.h"
 
 Ptr<Submesh> Submesh::Create(Ptr<Texture> tex) {
-	Ptr<Submesh> subMesh = new Submesh(tex);
-	return subMesh;
+	return new Submesh(tex);
 }
 
 Submesh::Submesh(Ptr<Texture> tex) {
+	mVertexBuffer = Renderer::Instance()->CreateBuffer();
+	mIndexBuffer = Renderer::Instance()->CreateBuffer();
 	Renderer::Instance()->SetVertexBufferData(mVertexBuffer, &mVertices[0], sizeof(mVertices[0]));
 	Renderer::Instance()->SetIndexBufferData(mIndexBuffer, &mIndices[0], sizeof(mIndices[0]));
 	SetTexture(tex);

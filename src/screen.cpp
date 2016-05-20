@@ -71,6 +71,14 @@ void Screen::MoveMouse(int x, int y) {
 	glfwSetCursorPos(mWindow, x, y);
 }
 
+int Screen::GetMouseX() {
+	return mMousex;
+}
+
+int Screen::GetMouseY() {
+	return mMousey;
+}
+
 bool Screen::IsMousePressed(int button) const {
 	return glfwGetMouseButton(mWindow, button) == GLFW_PRESS;
 }
