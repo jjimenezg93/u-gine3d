@@ -14,6 +14,7 @@
     <ClInclude Include="..\include\array.h" />
     <ClInclude Include="..\include\camera.h" />
     <ClInclude Include="..\include\entity.h" />
+    <ClInclude Include="..\include\light.h" />
     <ClInclude Include="..\include\mesh.h" />
     <ClInclude Include="..\include\model.h" />
     <ClInclude Include="..\include\renderer.h" />
@@ -32,6 +33,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\camera.cpp" />
     <ClCompile Include="..\src\entity.cpp" />
+    <ClCompile Include="..\src\light.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\mesh.cpp" />
     <ClCompile Include="..\src\model.cpp" />
@@ -41,6 +43,10 @@
     <ClCompile Include="..\src\screen.cpp" />
     <ClCompile Include="..\src\submesh.cpp" />
     <ClCompile Include="..\src\texture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\data\fragment.glsl" />
+    <None Include="..\data\vertex.glsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{AA205D65-795A-43B8-A03E-ACB33DB8500D}</ProjectGuid>

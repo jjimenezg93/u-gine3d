@@ -19,6 +19,12 @@ public:
 	const Array<Vertex>& GetVertices() const { return mVertices; }
 	Array<Vertex>& GetVertices() { return mVertices; }
 
+	const glm::vec3& GetColor() const { return mDiffuse; }
+	void SetColor(const glm::vec3& color) { mDiffuse = color; }
+
+	uint8 GetShininess() const { return mShininess; }
+	void SetShininess(uint8 shininess) { mShininess = shininess; }
+
 	void Rebuild();
 	void Render();
 protected:
@@ -30,6 +36,10 @@ private:
 	uint32 mIndexBuffer;
 	Array<Vertex> mVertices;
 	Array<uint16> mIndices;
+
+	glm::vec3 mDiffuse;
+	uint8 mShininess;
+
 	friend class Ptr<Submesh>;
 	friend class Ptr<const Submesh>;
 };

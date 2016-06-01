@@ -1,7 +1,13 @@
 uniform sampler2D texSampler;
-varying vec4 fcolor;
+uniform bool usesTexture;
 varying vec2 fuv;
+varying vec4 fcolor;
 
 void main() {
-	gl_FragColor = texture2D(texSampler, fuv) * fcolor;
+	if (usesTexture)
+		//gl_FragColor = texture2D(texSampler, fuv);
+		gl_FragColor = texture2D(texSampler, fuv) * fcolor;
+	else
+		//gl_FragColor = fcolor;
+		gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0) * fcolor;
 }

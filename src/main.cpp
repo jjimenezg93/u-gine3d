@@ -1,4 +1,4 @@
-#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+//#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #include "../include/u-gine.h"
 #define FULLSCREEN false
 
@@ -7,42 +7,55 @@ int main() {
 	else				Screen::Instance()->Open(800, 600, false);
 
 	Screen::Instance()->ShowMouse(true);
-	float prevMouseX = Screen::Instance()->GetMouseX(), prevMouseY = Screen::Instance()->GetMouseY();
-	float mouseX = Screen::Instance()->GetMouseX(), mouseY = Screen::Instance()->GetMouseY();
+	int32 prevMouseX = Screen::Instance()->GetMouseX(), prevMouseY = Screen::Instance()->GetMouseY();
+	int32 mouseX = Screen::Instance()->GetMouseX(), mouseY = Screen::Instance()->GetMouseY();
 
-	Ptr<Mesh> mesh = ResourceManager::Instance()->LoadMesh("data/box.msh");
+	Ptr<Mesh> mesh = ResourceManager::Instance()->LoadMesh("data/teapot.msh");
 
 	Ptr<Model> model = Model::Create(mesh);
 	model->GetPosition() = glm::vec3(0.f, 0.f, 0.f);
 
-	float fovX = 45.f;
-	float fovY = 45.f;
-	float farZ = 1.f;
+	float fovY = 40.f;
+	float farZ = 100.f;
 	float nearZ = 0.1f;
-	/*glm::mat4 projMat = glm::mat4(atan2f(fovX, 2), 0.f, 0.f, 0.f,
-		0.f, atan2f(fovY, 2), 0.f, 0.f,
-		0.f, 0.f, -(farZ + nearZ) / farZ - nearZ, -1.f,
-		0.f, 0.f, -2 * (nearZ * farZ) / farZ - nearZ, 0.f);*/
+
 	Ptr<Camera> camera = Camera::Create();
 	camera->GetPosition() = glm::vec3(0.f, 0.f, 4.f);
-	//camera->SetProjection(projMat);
-	camera->SetProjection(glm::perspective(fovY, fovX, nearZ, farZ));
+	camera->GetRotation() = glm::quat(glm::vec3(0.f, 0.f, 0.f));
+	camera->SetProjection(glm::perspective(glm::radians(fovY),
+		Screen::Instance()->GetWidth() / static_cast<float>(Screen::Instance()->GetHeight()),
+		nearZ, farZ));
 	camera->GetTarget() = model->GetPosition();
 	camera->SetUsesTarget(true);
-	camera->SetColor(glm::vec3(1.f, 1.f, 1.f));
+	camera->SetColor(glm::vec3(0.2f, 0.2f, 0.2f));
 	camera->SetViewport(0, 0, Screen::Instance()->GetWidth(), Screen::Instance()->GetHeight());
+
+	Ptr<Light> blueLight = Light::Create();
+	blueLight->SetColor(glm::vec3(0.f, 0.f, 1.f));
+	blueLight->SetType(Light::Type::DIRECTIONAL);
+	blueLight->GetRotation() = glm::quat(glm::vec3(1.f, 1.f, 1.f));
+
+	/*Ptr<Light> greenLight = Light::Create();
+	greenLight->SetColor(glm::vec3(0.f, 1.f, 0.f));
+	greenLight->SetType(Light::Type::POINT);
+	greenLight->GetRotation() = glm::quat(glm::vec3(1.f, 1.f, 1.f));*/
+
+	Scene::Instance()->SetAmbient(glm::vec3(0.2f, 0.2f, 0.2f));
 
 	Scene::Instance()->AddEntity(model.UpCast<Entity>());
 	Scene::Instance()->AddEntity(camera.UpCast<Entity>());
+	Scene::Instance()->AddEntity(blueLight.UpCast<Entity>());
+	//Scene::Instance()->AddEntity(greenLight.UpCast<Entity>());
 
 	while ( !Screen::Instance()->ShouldClose() && !Screen::Instance()->IsKeyPressed(GLFW_KEY_ESCAPE) ) {
 		Scene::Instance()->Update(Screen::Instance()->GetElapsed());
 		Scene::Instance()->Render();
 
-		/*glm::rotate(camera->GetRotation(), glm::radians(static_cast<float>(1)),
-			glm::vec3(0.f, 0.f, 1.f));*/
-		//camera->Move(glm::vec3(0.f, 0.f, -1.f));
-
+		//camera->Move(glm::vec3(0.f, 0.f, 1.f * Screen::Instance()->GetElapsed()));
+		camera->GetTarget() = model->GetPosition();
+		model->GetRotation() *= glm::quat(glm::radians(glm::vec3(0,
+			32 * Screen::Instance()->GetElapsed(), 0)));
+		//_sleep(500);
 		Screen::Instance()->Refresh();
 		Screen::Instance()->SetTitle(Renderer::Instance()->GetProgramError());
 	}

@@ -7,8 +7,6 @@ Ptr<Submesh> Submesh::Create(Ptr<Texture> tex) {
 Submesh::Submesh(Ptr<Texture> tex) {
 	mVertexBuffer = Renderer::Instance()->CreateBuffer();
 	mIndexBuffer = Renderer::Instance()->CreateBuffer();
-	Renderer::Instance()->SetVertexBufferData(mVertexBuffer, &mVertices[0], sizeof(mVertices[0]));
-	Renderer::Instance()->SetIndexBufferData(mIndexBuffer, &mIndices[0], sizeof(mIndices[0]));
 	SetTexture(tex);
 }
 
@@ -28,15 +26,17 @@ void Submesh::AddTriangle(uint32 v0, uint32 v1, uint32 v2) {
 }
 
 void Submesh::Rebuild() {
-	Renderer::Instance()->SetVertexBufferData(mVertexBuffer, &mVertices[0], sizeof(mVertices[0]));
-	Renderer::Instance()->SetIndexBufferData(mIndexBuffer, &mIndices[0], sizeof(mIndices[0]));
+	Renderer::Instance()->SetVertexBufferData(mVertexBuffer, &mVertices[0], sizeof(Vertex) * mVertices.Size());
+	Renderer::Instance()->SetIndexBufferData(mIndexBuffer, &mIndices[0], sizeof(uint16) * mIndices.Size());
 }
 
 void Submesh::Render() {
-	if (mTexture->GetHandle()) {
+	if (mTexture != nullptr && mTexture->GetHandle()) {
 		Renderer::Instance()->SetTexture(mTexture->GetHandle());
 	} else {
 		Renderer::Instance()->SetTexture(0);
 	}
+	Renderer::Instance()->SetDiffuse(mDiffuse);
+	Renderer::Instance()->SetShininess(mShininess);
 	Renderer::Instance()->DrawBuffers(mVertexBuffer, mIndexBuffer, mIndices.Size());
 }

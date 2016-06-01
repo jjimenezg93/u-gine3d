@@ -27,7 +27,7 @@ void Screen::Open(uint16 width, uint16 height, bool fullscreen) {
 	mHeight = height;
 
 	// Inicializamos temporizador
-	mLastTime = glfwGetTime();
+	mLastTime = static_cast<float>(glfwGetTime());
 	mElapsed = 0;
 }
 
@@ -51,8 +51,8 @@ void Screen::Refresh() {
 	glfwGetCursorPos(mWindow, &mx, &my);
 	mMousex = int32(mx);
 	mMousey = int32(my);
-	mElapsed = glfwGetTime() - mLastTime;
-	mLastTime = glfwGetTime();
+	mElapsed = static_cast<float>(glfwGetTime()) - mLastTime;
+	mLastTime = static_cast<float>(glfwGetTime());
 }
 
 uint16 Screen::GetDesktopWidth() const {

@@ -28,17 +28,20 @@ Ptr<Mesh> Mesh::Create(const String & filename) {
 	for (rapidjson::Value::ConstValueIterator itr = submeshes.Begin();
 	itr != submeshes.End(); ++itr) {
 		//texture
-		String tex = String("data/") + (*itr)["texture"].GetString();
+		String tex;
+		if (itr->HasMember("texture")) {
+			tex = String(filename).ExtractDir() + "/" + (*itr)["texture"].GetString();
+		} else tex = "";
 		Ptr<Submesh> submesh = Submesh::Create(ResourceManager::Instance()->LoadTexture(tex));
-		
+
 		//indices
-		uint32 iX, iY, iZ;
+		uint32 i0, i1, i2;
 		rapidjson::Value::ConstValueIterator indIt = (*itr)["indices"].Begin();
 		while (indIt != (*itr)["indices"].End()) {
-			iX = static_cast<uint32>(indIt++->GetInt());
-			iY = static_cast<uint32>(indIt++->GetInt());
-			iZ = static_cast<uint32>(indIt++->GetInt());
-			submesh->AddTriangle(iX, iY, iZ);
+			i0 = static_cast<uint32>(indIt++->GetInt());
+			i1 = static_cast<uint32>(indIt++->GetInt());
+			i2 = static_cast<uint32>(indIt++->GetInt());
+			submesh->AddTriangle(i0, i1, i2);
 		}
 
 		//coords
@@ -54,13 +57,43 @@ Ptr<Mesh> Mesh::Create(const String & filename) {
 		}
 
 		//texcoords
-		uint32 i = 0;
-		float tcU, tcV;
-		indIt = (*itr)["texcoords"].Begin();
-		while (indIt != (*itr)["texcoords"].End()) {
-			tcU = static_cast<float>(indIt++->GetDouble());
-			tcV = static_cast<float>(indIt++->GetDouble());
-			submesh->GetVertices()[i++].mTexCoords = glm::vec2(tcU, tcV);
+		if (itr->HasMember("texcoords") && tex != "") {
+			uint32 i = 0;
+			float tcU, tcV;
+			indIt = (*itr)["texcoords"].Begin();
+			while (indIt != (*itr)["texcoords"].End()) {
+				tcU = static_cast<float>(indIt++->GetDouble());
+				tcV = static_cast<float>(indIt++->GetDouble());
+				submesh->GetVertices()[i++].mTexCoords = glm::vec2(tcU, tcV);
+			}
+		}
+
+		//normals
+		if (itr->HasMember("normals")) {
+			uint32 iN = 0;
+			indIt = (*itr)["normals"].Begin();
+			if (indIt) {
+				while (indIt != (*itr)["normals"].End()) {
+					float normX = static_cast<float>(indIt++->GetDouble());
+					float normY = static_cast<float>(indIt++->GetDouble());
+					float normZ = static_cast<float>(indIt++->GetDouble());
+					submesh->GetVertices()[iN++].mNormal = glm::vec3(normX, normY, normZ);
+				}
+			}
+		}
+
+		//diffuse color
+		if (itr->HasMember("color")) {
+			indIt = (*itr)["color"].End();
+			if (indIt) {
+				glm::vec3 diffuse((--indIt)->GetInt(), (--indIt)->GetInt(), (--indIt)->GetInt());
+				submesh->SetColor(diffuse);
+			}
+		}
+
+		//shininess
+		if (itr->HasMember("shininess")) {
+			submesh->SetShininess((*itr)["shininess"].GetInt());
 		}
 
 		mesh->AddSubmesh(submesh);

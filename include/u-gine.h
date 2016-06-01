@@ -4,6 +4,7 @@
 #include "array.h"
 #include "camera.h"
 #include "entity.h"
+#include "light.h"
 #include "math.h"
 #include "mesh.h"
 #include "model.h"

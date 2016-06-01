@@ -1,6 +1,8 @@
 #include "../include/scene.h"
 #include "../include/renderer.h"
 #include "../include/entity.h"
+#include "../include/light.h"
+#include "../include/smartptr.h"
 
 Ptr<Scene> Scene::mInstance = nullptr;
 
@@ -10,7 +12,6 @@ Scene::Scene() {
 
 void Scene::SetModel(const glm::mat4 & m) {
 	mModelMatrix = m;
-
 	Renderer::Instance()->SetMatrices(mModelMatrix, mCurrentCamera->GetView(),
 		mCurrentCamera->GetProjection());
 }
@@ -20,6 +21,8 @@ void Scene::AddEntity(Ptr<Entity> entity) {
 		mEntities.Add(entity);
 		if (entity.DownCast<Camera>() != nullptr) {
 			mCameras.Add(entity.DownCast<Camera>());
+		} else if (entity.DownCast<Light>() != nullptr) {
+			mLights.Add(entity.DownCast<Light>());
 		}
 	}
 }
@@ -29,25 +32,41 @@ void Scene::RemoveEntity(Ptr<Entity> entity) {
 		mEntities.Remove(entity);
 		if (entity.DownCast<Camera>() != nullptr) {
 			mCameras.Remove(entity.DownCast<Camera>());
+		} else if (entity.DownCast<Light>() != nullptr) {
+			mLights.Remove(entity.DownCast<Light>());
 		}
 	}
 }
 
 void Scene::Update(float elapsed) {
-	uint16_t numEntities = mEntities.Size();
-	for (uint16_t index = 0; index < numEntities; ++index) {
+	uint16 numEntities = mEntities.Size();
+	for (uint16 index = 0; index < numEntities; ++index) {
 		mEntities[index]->Update(elapsed);
 	}
 }
 
 void Scene::Render() {
-	uint16_t numCameras = mCameras.Size();
-	uint16_t numEntities = mEntities.Size();
-	for (uint16_t iCamera = 0; iCamera < numCameras; ++iCamera) {
+	uint16 numCameras = mCameras.Size();
+	uint16 numEntities = mEntities.Size();
+	for (uint16 iCamera = 0; iCamera < numCameras; ++iCamera) {
 		mCurrentCamera = mCameras[iCamera];
 		mCurrentCamera->Prepare();
-		for (uint16_t iEntity = 0; iEntity < numEntities; ++iEntity) {
+		for (uint16 iEntity = 0; iEntity < numEntities; ++iEntity) {
 			mEntities[iEntity]->Render();
 		}
 	}
+
+	uint32 numLights = mLights.Size();
+	if (mLights.Size() != 0) {
+		Renderer::Instance()->EnableLighting(true);
+		for (uint32 iLights = 0; iLights < numLights; ++iLights) {
+			Renderer::Instance()->EnableLight(iLights, true);
+			mLights[iLights]->Prepare();
+		}
+	}
+
+	for (uint32 iLights = 0; iLights < numLights; ++iLights) {
+		Renderer::Instance()->EnableLight(iLights, false);
+	}
+	Renderer::Instance()->EnableLighting(false);
 }
