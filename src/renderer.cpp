@@ -103,20 +103,20 @@ void Renderer::SetShininess(uint8 shininess) {
 }
 
 void Renderer::EnableLight(uint32 index, bool enabled) {
-	mLightsEnabled[index] = true;
+	glUniform1i(mLightsEnabledLoc[index], enabled);
+}
+
+void Renderer::EnableLighting(bool enable) {
+	glUniform1i(mLightingEnabledLoc, enable);
 }
 
 void Renderer::SetLightData(uint32 index, const glm::vec4& vector,
-	const glm::vec3& color, float attenuation) {
-	mLightsPos[index] = vector;
-	mLightsColor[index] = color;
-	mLightsAtt[index] = attenuation;
-
-	glUniform4f(mLightsPosLoc[index], mLightsPos[index].x,
-		mLightsPos[index].y, mLightsPos[index].z, 1);
-	glUniform3f(mLightsColorLoc[index], mLightsColor[index].x,
-		mLightsColor[index].y, mLightsColor[index].z);
-	glUniform1f(mLightsAttLoc[index], mLightsAtt[index]);
+const glm::vec3& color, float attenuation) {
+	glUniform4f(mLightsPosLoc[index], vector.x,
+		vector.y, vector.z, vector.w);
+	glUniform3f(mLightsColorLoc[index], color.x,
+		color.y, color.z);
+	glUniform1f(mLightsAttLoc[index], attenuation);
 }
 
 uint32 Renderer::CreateBuffer() {
@@ -227,10 +227,11 @@ void Renderer::UseProgram(uint32 program) {
 	} else {
 		glUseProgram(program);
 		mMVPLoc = glGetUniformLocation(program, "MVP");
-		mNormalMatLoc = glGetUniformLocation(program, "NormalMatrix");
-		mModelViewMatLoc = glGetUniformLocation(program, "ModelView");
+		mNormalMatLoc = glGetUniformLocation(program, "normalMatrix");
+		mModelViewMatLoc = glGetUniformLocation(program, "modelView");
 		mTexSamplerLoc = glGetUniformLocation(program, "texSampler");
 		glUniform1i(mTexSamplerLoc, 0);
+		mLightingEnabledLoc = glGetUniformLocation(program, "lightingEnabled");
 		mDiffuseLoc = glGetUniformLocation(program, "diffuse");
 		mAmbientLoc = glGetUniformLocation(program, "ambient");
 		mShininessLoc = glGetUniformLocation(program, "shininess");
@@ -239,10 +240,10 @@ void Renderer::UseProgram(uint32 program) {
 		mVTexLoc = glGetAttribLocation(program, "vuv");
 		mVNormLoc = glGetAttribLocation(program, "vnormal");
 
-		/*for (uint16 i = 0; i < MAX_LIGHTS; ++i) {
+		for (uint16 i = 0; i < MAX_LIGHTS; ++i) {
 			String str = String("lightEnabled[") + String::FromInt(i) + String("]");
 			mLightsEnabledLoc[i] = glGetUniformLocation(program, str.ToCString());
-		}*/
+		}
 		for (uint16 i = 0; i < MAX_LIGHTS; ++i) {
 			String str = String("lightPos[") + String::FromInt(i) + String("]");
 			mLightsPosLoc[i] = glGetUniformLocation(program, str.ToCString());

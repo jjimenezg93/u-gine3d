@@ -32,7 +32,7 @@ public:
 	void SetDiffuse(const glm::vec3& color);
 	void SetAmbient(const glm::vec3& color);
 	void SetShininess(uint8 shininess);
-	void EnableLighting(bool enable) { mLightingEnabled = enable; }
+	void EnableLighting(bool enable);
 	void EnableLight(uint32 index, bool enabled);
 	void SetLightData(uint32 index, const glm::vec4& vector,
 		const glm::vec3& color, float attenuation);
@@ -55,13 +55,6 @@ protected:
 private:
 	static Ptr<Renderer> mInstance;
 
-	//Lights
-	bool mLightsEnabled[MAX_LIGHTS];
-	glm::vec4 mLightsPos[MAX_LIGHTS];
-	glm::vec3 mLightsColor[MAX_LIGHTS];
-	float mLightsAtt[MAX_LIGHTS];
-	bool mLightingEnabled;
-
 	//shaders' params
 	int mMVPLoc;
 	int mNormalMatLoc;
@@ -70,10 +63,11 @@ private:
 	int mVPosLoc;
 	int mVTexLoc;
 	int mVNormLoc;
-	//int mLightsEnabledLoc[MAX_LIGHTS];
+	int mLightsEnabledLoc[MAX_LIGHTS];
 	int mLightsPosLoc[MAX_LIGHTS];
 	int mLightsColorLoc[MAX_LIGHTS];
 	int mLightsAttLoc[MAX_LIGHTS];
+	int mLightingEnabledLoc;
 	int mDiffuseLoc;
 	int mAmbientLoc;
 	int mShininessLoc;

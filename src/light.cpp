@@ -11,9 +11,17 @@ Ptr<Light> Light::Create() {
 
 void Light::Prepare() {
 	Ptr<Camera> currCamera = Scene::Instance()->GetCurrentCamera();
-	Renderer::Instance()->SetAmbient(mColor);
-	glm::vec4 position = glm::vec4(GetPosition().x, GetPosition().y,
-		GetPosition().z, 1) * currCamera->GetView();
+	glm::vec4 position;
+	if (mType == Type::DIRECTIONAL) {
+		position = currCamera->GetView() * glm::vec4(GetPosition().x, GetPosition().y,
+			GetPosition().z, 0);
+	} else if (mType == Type::POINT) {
+		position = currCamera->GetView() * glm::vec4(GetPosition().x, GetPosition().y,
+			GetPosition().z, 1);
+	}
+
+	Renderer::Instance()->EnableLight(mIndex, true);
+
 	Renderer::Instance()->SetLightData(mIndex, position, mColor, mAttenuation);
 }
 

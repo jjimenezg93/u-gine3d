@@ -26,27 +26,31 @@ void main() {
 	if(lightingEnabled == true) {
 		vec3 combinedDiffuse = ambient;
 		vec3 combinedSpecular = vec3(0.0, 0.0, 0.0);
-		
+		vec3 L;
+		vec3 N;		
 		for (int l = 0; l < MAX_LIGHTS; ++l) {
-			if (lightEnabled[l] == true) {
-				vec3 N = normalize(normalMatrix * vec4(vnormal.x, vnormal.y, vnormal.z, 0)).xyz;
-				vec3 L = lightPos[l].xyz;
+			if (lightEnabled[l]) {
+				N = normalize(normalMatrix * vec4(vnormal, 0)).xyz;
+				L = lightPos[l].xyz;
 				float attRate = 1.0;
 				if (lightPos[l].w == 1.0) {
-					vec3 dist = L - (modelView * vec4(vpos.x, vpos.y, vpos.z, 1)).xyz;
-					attRate = 1.0 / (lightAtt[l] * length(dist));
+					L = L - (modelView * vec4(vpos, 1)).xyz;
+					attRate = 1.0 / (1.0 + lightAtt[l] * length(L));
 				}
-				float NdotL = max(0.0, dot(N, normalize(L)));
+				L = normalize(L);
+				float NdotL = max(0.0, dot(N, L));
 				combinedDiffuse += NdotL * lightColor[l] * attRate;
 				if (shininess > 0 && NdotL > 0.0) {
-					vec3 H = -normalize(modelView * vec4(vpos.x, vpos.y, vpos.z, 1)).xyz - L;
+					vec3 H = L - normalize(modelView * vec4(vpos.x, vpos.y, vpos.z, 1)).xyz;
 					float NdotH = max(0.0, dot(N, H));
 					combinedSpecular += pow(NdotH, float(shininess)) * attRate;
 				}
 			}
 		}
-		vec3 color = ambient + (combinedDiffuse + combinedSpecular);
-		//vec3 color = diffuse;
-		fcolor = vec4(color.x, color.y, color.z, 1.0);
+		vec3 color = (diffuse * combinedDiffuse) + combinedSpecular;
+		//color = combinedSpecular;
+		fcolor = vec4(color.r, color.g, color.b, 1.0);
+	} else {
+		fcolor = vec4(1.0, 1.0, 1.0, 1.0);
 	}
 }

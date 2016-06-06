@@ -48,24 +48,23 @@ void Scene::Update(float elapsed) {
 void Scene::Render() {
 	uint16 numCameras = mCameras.Size();
 	uint16 numEntities = mEntities.Size();
+	uint32 numLights = mLights.Size();
 	for (uint16 iCamera = 0; iCamera < numCameras; ++iCamera) {
 		mCurrentCamera = mCameras[iCamera];
 		mCurrentCamera->Prepare();
+		if (mLights.Size() != 0) {
+			Renderer::Instance()->EnableLighting(true);
+			for (uint32 iLights = 0; iLights < numLights; ++iLights) {
+				mLights[iLights]->Prepare();
+			}
+		}
 		for (uint16 iEntity = 0; iEntity < numEntities; ++iEntity) {
 			mEntities[iEntity]->Render();
 		}
 	}
 
-	uint32 numLights = mLights.Size();
-	if (mLights.Size() != 0) {
-		Renderer::Instance()->EnableLighting(true);
-		for (uint32 iLights = 0; iLights < numLights; ++iLights) {
-			Renderer::Instance()->EnableLight(iLights, true);
-			mLights[iLights]->Prepare();
-		}
-	}
 
-	for (uint32 iLights = 0; iLights < numLights; ++iLights) {
+	for (uint32 iLights = 0; iLights < MAX_LIGHTS; ++iLights) {
 		Renderer::Instance()->EnableLight(iLights, false);
 	}
 	Renderer::Instance()->EnableLighting(false);
