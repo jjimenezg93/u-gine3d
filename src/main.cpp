@@ -34,23 +34,21 @@ int main() {
 	blueLight->SetColor(glm::vec3(0.f, 0.f, 1.f));
 	blueLight->SetType(Light::Type::DIRECTIONAL);
 	blueLight->GetPosition() = glm::vec3(1.f, 1.f, 1.f);
-	blueLight->SetAttenuation(1.f);
+	blueLight->SetAttenuation(0.f);
 
 	Ptr<Light> greenLight = Light::Create();
 	greenLight->SetColor(glm::vec3(0.f, 1.f, 0.f));
 	greenLight->SetType(Light::Type::POINT);
 	greenLight->GetPosition() = camera->GetPosition();
-	blueLight->SetAttenuation(0.05f);
-
-	Scene::Instance()->SetAmbient(glm::vec3(0.2f, 0.2f, 0.2f));
-
-	
+	greenLight->SetAttenuation(0.05f);
 
 	Scene::Instance()->AddEntity(model.UpCast<Entity>());
 	Scene::Instance()->AddEntity(camera.UpCast<Entity>());
 	Scene::Instance()->AddEntity(blueLight.UpCast<Entity>());
 	Scene::Instance()->AddEntity(greenLight.UpCast<Entity>());
 
+	Scene::Instance()->SetAmbient(glm::vec3(0.2f, 0.2f, 0.2f));
+	
 	while ( !Screen::Instance()->ShouldClose() && !Screen::Instance()->IsKeyPressed(GLFW_KEY_ESCAPE) ) {
 		Scene::Instance()->Update(Screen::Instance()->GetElapsed());
 		Scene::Instance()->Render();
@@ -58,7 +56,6 @@ int main() {
 		camera->GetTarget() = model->GetPosition();
 		model->GetRotation() *= glm::quat(glm::radians(glm::vec3(0,
 			32 * Screen::Instance()->GetElapsed(), 0)));
-		//_sleep(200);
 
 		Screen::Instance()->Refresh();
 		Screen::Instance()->SetTitle(Renderer::Instance()->GetProgramError());

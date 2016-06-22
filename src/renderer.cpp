@@ -22,10 +22,11 @@ void Renderer::Setup3D() {
 
 void Renderer::SetMatrices(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
 	glm::mat4 mvp = projection * view * model;
-	glm::mat4 normalMat = glm::transpose(glm::inverse(view * model));
+	glm::mat4 mv = view * model;
+	glm::mat4 normalMat = glm::transpose(glm::inverse(mv));
 	glUniformMatrix4fv(mMVPLoc, 1, GL_FALSE, glm::value_ptr(mvp));
 	glUniformMatrix4fv(mNormalMatLoc, 1, GL_FALSE, glm::value_ptr(normalMat));
-	glUniformMatrix4fv(mModelViewMatLoc, 1, GL_FALSE, glm::value_ptr(view * model));
+	glUniformMatrix4fv(mModelViewMatLoc, 1, GL_FALSE, glm::value_ptr(mv));
 }
 
 void Renderer::SetViewport(int x, int y, int w, int h) {

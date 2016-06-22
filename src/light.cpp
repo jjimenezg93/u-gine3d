@@ -2,11 +2,16 @@
 #include "..\include\scene.h"
 #include "..\include\camera.h"
 #include "..\include\renderer.h"
+#include "../lib/glm/gtx/transform.hpp"
 
-bool Light::lightsUsed[MAX_LIGHTS];
+bool Light::lightsUsed[MAX_LIGHTS] = {false, false, false, false, false, false, false, false};
 
 Ptr<Light> Light::Create() {
-	return new Light();
+	Ptr<Light> newLight = new Light();
+	if (newLight->mIndex < MAX_LIGHTS) {
+		return newLight;
+	} else
+		return nullptr;
 }
 
 void Light::Prepare() {
@@ -19,9 +24,7 @@ void Light::Prepare() {
 		position = currCamera->GetView() * glm::vec4(GetPosition().x, GetPosition().y,
 			GetPosition().z, 1);
 	}
-
 	Renderer::Instance()->EnableLight(mIndex, true);
-
 	Renderer::Instance()->SetLightData(mIndex, position, mColor, mAttenuation);
 }
 

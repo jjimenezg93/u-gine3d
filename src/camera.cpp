@@ -1,12 +1,21 @@
 #include "../include/camera.h"
 #include "../include/renderer.h"
+#include "../include/screen.h"
 
 Ptr<Camera> Camera::Create() {
 	return new Camera();
 }
 
 Camera::Camera() {
-
+	mUsesTarget = false;
+	mVX = 0;
+	mVY = 0;
+	mVW = Screen::Instance()->GetWidth();
+	mVH = Screen::Instance()->GetHeight();
+	mColor = glm::vec3(0, 0, 0);
+	mTarget = glm::vec3(0, 0, 0);
+	mProjMatrix = glm::mat4();
+	mViewMatrix = glm::mat4();
 }
 
 void Camera::Prepare() {
